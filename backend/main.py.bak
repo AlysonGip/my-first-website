@@ -1,0 +1,73 @@
+from pathlib import Path
+from uuid import uuid4
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+from .schemas import QueryRequest, QueryResponse
+from .services.tushare_client import fetch_financials
+from .services.finance_metrics import build_financial_dataset
+from .services.exporter import dataframe_to_excel
+from .services.summary import summarize_financials
+
+TEMP_DIR = Path("tmp_exports")
+TEMP_DIR.mkdir(exist_ok=True)
+
+app = FastAPI(title="AlysonG的行研究工具（实习版）")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
+
+
+app.mount("/assets", StaticFiles(directory="frontend/assets"), name="assets")
+
+
+@app.get("/", include_in_schema=False)
+async def index():
+    index_path = Path("frontend/index.html")
+    if not index_path.exists():
+        raise HTTPException(status_code=500, detail="前端页面缺失")
+    return FileResponse(index_path)
+
+
+@app.post("/api/financials", response_model=QueryResponse)
+async def get_financials(request: QueryRequest):
+    try:
+        raw_frames = fetch_financials(request)
+        dataframe = build_financial_dataset(raw_frames)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    try:
+        summary = await summarize_financials(dataframe, request)
+    except Exception as exc:
+        summary = f"GPT 总结失败：{exc}"
+
+    temp_name = f"report-{uuid4()}.xlsx"
+    temp_path = TEMP_DIR / temp_name
+    dataframe_to_excel(dataframe, temp_path, request.filename or temp_name)
+    return QueryResponse(
+        summary=summary,
+        table=dataframe.to_dict(orient="records"),
+        columns=list(dataframe.columns),
+        download_token=temp_name,
+    )
+
+
+@app.get("/api/download/{token}")
+async def download(token: str):
+    file_path = TEMP_DIR / token
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="文件不存在或已过期")
+    return FileResponse(
+        file_path,
+        filename=token.replace("report-", "AlysonG-"),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )

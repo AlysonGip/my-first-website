@@ -1,0 +1,10 @@
+from pathlib import Path
+
+import pandas as pd
+
+
+def dataframe_to_excel(df: pd.DataFrame, path: Path, base_name: str) -> None:
+    safe_name = base_name.rstrip(".xlsx") or "AlysonG-report"
+    final_path = path.with_name(f"{safe_name}.xlsx")
+    with pd.ExcelWriter(final_path, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="数据明细")
