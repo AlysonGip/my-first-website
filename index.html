@@ -1,0 +1,91 @@
+index.html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>AlysonG的行研究工具（实习版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-6 shadow-lg">
+    <h1 class="text-3xl font-semibold">AlysonG的行研究工具（实习版）</h1>
+    <p class="text-slate-200 mt-2">链接数据·洞察企业·一站式导出分析</p>
+  </header>
+
+  <main class="max-w-6xl mx-auto py-10 px-6 space-y-8">
+    <section class="bg-slate-900 p-6 rounded-xl shadow-lg">
+      <form id="query-form" class="grid gap-4 lg:grid-cols-2">
+        <label class="flex flex-col gap-1">
+          <span class="text-sm text-slate-300">Tushare Token</span>
+          <input name="tushare_token" required class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="请输入 Tushare Token">
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-sm text-slate-300">Excel 文件名</span>
+          <input name="filename" class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="可选，仅文件名，无扩展名">
+        </label>
+        <label class="flex flex-col gap-1 lg:col-span-2">
+          <span class="text-sm text-slate-300">股票代码（逗号分隔，最多10个，如 600000.SH）</span>
+          <textarea name="symbols" required rows="2" class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="示例：600000.SH, 000001.SZ"></textarea>
+        </label>
+        <div class="flex gap-4 items-center">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="period_type" value="year" checked class="accent-purple-500">
+            按年份
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="period_type" value="quarter" class="accent-purple-500">
+            按季度
+          </label>
+        </div>
+        <div class="flex flex-wrap gap-4 lg:col-span-2">
+          <label class="flex flex-col gap-1">
+            <span class="text-sm text-slate-300">起始年份</span>
+            <input type="number" name="start_year" required class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:ring-2 focus:ring-purple-500">
+          </label>
+          <label class="flex flex-col gap-1">
+            <span class="text-sm text-slate-300">结束年份</span>
+            <input type="number" name="end_year" required class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:ring-2 focus:ring-purple-500">
+          </label>
+          <label class="flex flex-col gap-1 quarter-only hidden">
+            <span class="text-sm text-slate-300">起始季度 (1-4)</span>
+            <input type="number" name="start_quarter" min="1" max="4" class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:ring-2 focus:ring-purple-500">
+          </label>
+          <label class="flex flex-col gap-1 quarter-only hidden">
+            <span class="text-sm text-slate-300">结束季度 (1-4)</span>
+            <input type="number" name="end_quarter" min="1" max="4" class="rounded-lg bg-slate-800 p-2 text-slate-100 focus:ring-2 focus:ring-purple-500">
+          </label>
+        </div>
+        <button class="bg-purple-600 hover:bg-purple-500 transition rounded-lg py-2 px-4 font-semibold lg:col-span-2">查询</button>
+      </form>
+    </section>
+
+    <section id="result" class="hidden space-y-6">
+      <div class="bg-slate-900 rounded-xl p-6 shadow-lg">
+        <h2 class="text-xl font-semibold mb-2">GPT 总结</h2>
+        <p id="summary" class="leading-relaxed text-slate-200 whitespace-pre-line"></p>
+      </div>
+      <div class="bg-slate-900 rounded-xl p-6 shadow-lg overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead class="text-slate-300">
+            <tr id="table-head"></tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div>
+        <a id="download-link" class="bg-emerald-600 hover:bg-emerald-500 inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium">下载 Excel</a>
+      </div>
+    </section>
+
+    <section id="status" class="text-sm text-slate-400"></section>
+  </main>
+
+  <script src="./frontend/assets/main.js"></script>
+</body>
+</html>
+Commit message: create root index.html for GitHub Pages
