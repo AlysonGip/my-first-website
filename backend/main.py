@@ -17,9 +17,19 @@ TEMP_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="AlysonG的行研工具（实习版）")
 
+# === 仅此处为关键修改：把 CORS 的 * 改为明确允许的域名 ===
+ALLOWED_ORIGINS = [
+    "https://alysongip.github.io",
+    "https://alysongip.github.io/my-first-website",
+    # 本地调试可用（用不到可以删掉）
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,   # 不再使用 "*"
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
