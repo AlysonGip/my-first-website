@@ -2,3 +2,9 @@
 .DS_Store
 tmp_exports/
 *.xlsx
+
+.venv/
+.DS_Store
+backend/.DS_Store
+tmp_exports/
+*.xlsx
